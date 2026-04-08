@@ -24,6 +24,9 @@ export class Renderer {
     }
 
     displayPlacedCells(positionsArray) {
+        for (const value of this.divMap.values()) {
+            value.style.backgroundColor = "black";
+        }
         for (const position of positionsArray) {
             const relatedElement = this.divMap.get(`${position.x}-${position.y}`);
             relatedElement.style.backgroundColor = 'red';

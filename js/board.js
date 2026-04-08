@@ -40,7 +40,7 @@ export class Board {
 
             if (this.nextPlacementWillCollide(lastPlacedPositions)) {
                 this.restoreLastPlacedPositions(lastPlacedPositions);
-                
+
                 window.dispatchEvent(new CustomEvent('color-it', {
                     detail: lastPlacedPositions,
                     bubbles: true,
@@ -54,6 +54,8 @@ export class Board {
                 bubbles: true,
                 composed: true,
             }));
+            console.log(lastPlacedPositions)
+
             lastPlacedPositions = this.clearBoardSavePlaced();
         }
     }
