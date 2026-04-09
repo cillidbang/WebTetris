@@ -40,22 +40,16 @@ export class Board {
 
             if (this.nextPlacementWillCollide(lastPlacedPositions)) {
                 this.restoreLastPlacedPositions(lastPlacedPositions);
-
-                window.dispatchEvent(new CustomEvent('color-it', {
-                    detail: lastPlacedPositions,
-                    bubbles: true,
-                    composed: true,
-                }));
                 return;
             }
-            this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray);
+            let currentFigureCoordinates = this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray);
+
             window.dispatchEvent(new CustomEvent('color-it', {
-                detail: lastPlacedPositions,
+                detail: currentFigureCoordinates,
                 bubbles: true,
                 composed: true,
             }));
-            console.log(lastPlacedPositions)
-
+            console.log(this.board)
             lastPlacedPositions = this.clearBoardSavePlaced();
         }
     }
@@ -79,14 +73,17 @@ export class Board {
     }
 
     insertFigureAtCoordinates(rowIndex ,insertColumn,fieldValue,figureArray) {
+        const placed = [];
         for (let row = 0; row <= figureArray.length - 1; row++) {
             for (let column = 0; column <= figureArray[row].length - 1; column++) {
             let nextRow = row + rowIndex;
                 if (figureArray[row][column] !== this.empty) {
                     this.board[nextRow][column + insertColumn - 1] = fieldValue;
+                    placed.push({x: nextRow, y:column + insertColumn - 1})
                 }
             }
         }
+        return placed;
     }
 
 
