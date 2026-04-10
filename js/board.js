@@ -10,58 +10,57 @@ export class Board {
     empty = '.';
     pending = 'X';
 
+    lastPlacedPositions = []
 
     constructor() {
-        this.clearBoardSavePlaced();
+        this.clearBoardSavePlacedPositions();
     }
-    clearBoardSavePlaced() {
-        const placedPositions = [];
+    clearBoardSavePlacedPositions() {
+        this.lastPlacedPositions = [];
         
         for (let row = 0; row <= this.board.length - 1; row++) {
             for (let column = 0; column <= this.board[row].length - 1; column++) {
                 if (this.board[row][column] === this.pending) {
-                    placedPositions.push({x: row, y: column});
+                    this.lastPlacedPositions.push({x: row, y: column});
                 }
                 if (this.board[row][column] !== this.placed) {
                     this.board[row][column] = this.empty;
                 }
             }
         }
-        return placedPositions;
     }
 
     async figureFallUntilCollision(insertColumn, figureArray) {
         const lastIndexForPlacement = (this.board.length - 1) - (figureArray.length - 1);
-        let lastPlacedPositions = [];
+
         for (let row = 0; row <= lastIndexForPlacement; row++) {
 
             const isLastRow = row === lastIndexForPlacement;
             const fieldStatus = isLastRow ? this.placed : this.pending;
 
-            if (this.nextPlacementWillCollide(lastPlacedPositions)) {
-                this.restoreLastPlacedPositions(lastPlacedPositions);
+            if (this.nextPlacementWillCollide()) {
+                this.restoreLastPlacedPositions();
                 return;
             }
-            let currentFigureCoordinates = this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray);
+            this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray);
 
             window.dispatchEvent(new CustomEvent('color-it', {
-                detail: currentFigureCoordinates,
+                detail: this.lastPlacedPositions,
                 bubbles: true,
                 composed: true,
             }));
-            console.log(this.board)
-            lastPlacedPositions = this.clearBoardSavePlaced();
+            this.clearBoardSavePlacedPositions();
         }
     }
 
-    restoreLastPlacedPositions(lastPlacedPositions) {
-        for (let position of lastPlacedPositions) {
+    restoreLastPlacedPositions() {
+        for (let position of this.lastPlacedPositions) {
             this.board[position.x][position.y] = this.placed;
         }
     }
 
-    nextPlacementWillCollide(lastPositions) {
-        for (let position of lastPositions) {
+    nextPlacementWillCollide() {
+        for (let position of this.lastPlacedPositions) {
             const innerBonds = position.x < this.board.length - 1 && position.y < this.board[position.x].length - 1;
             if (innerBonds) {
                 if (this.board[position.x + 1][position.y] === this.placed) {
@@ -71,19 +70,17 @@ export class Board {
         }
         return false;
     }
-
-    insertFigureAtCoordinates(rowIndex ,insertColumn,fieldValue,figureArray) {
-        const placed = [];
+    insertFigureAtCoordinates(rowIndex ,insertColumn, fieldValue, figureArray) {
+        this.lastPlacedPositions = [];
         for (let row = 0; row <= figureArray.length - 1; row++) {
             for (let column = 0; column <= figureArray[row].length - 1; column++) {
             let nextRow = row + rowIndex;
                 if (figureArray[row][column] !== this.empty) {
                     this.board[nextRow][column + insertColumn - 1] = fieldValue;
-                    placed.push({x: nextRow, y:column + insertColumn - 1})
+                    this.lastPlacedPositions.push({x: nextRow, y:column + insertColumn - 1})
                 }
             }
         }
-        return placed;
     }
 
 

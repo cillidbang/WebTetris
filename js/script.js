@@ -15,3 +15,4 @@ window.addEventListener('color-it', e => {
 })
 
 playboard.figureFallUntilCollision(4, FigureCollection.Angle)
+playboard.figureFallUntilCollision(4, FigureCollection.Angle)
