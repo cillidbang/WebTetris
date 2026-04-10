@@ -23,11 +23,16 @@ export class Renderer {
         }
     }
 
-    displayPlacedCells(positionsArray) {
+    displayPlacedCells(positionLists) {
         for (const value of this.divMap.values()) {
             value.style.backgroundColor = "black";
         }
-        for (const position of positionsArray) {
+        for (const position of positionLists.pendingList) {
+            const relatedElement = this.divMap.get(`${position.x}-${position.y}`);
+            relatedElement.style.backgroundColor = 'red';
+        }
+
+        for (const position of positionLists.placedList) {
             const relatedElement = this.divMap.get(`${position.x}-${position.y}`);
             relatedElement.style.backgroundColor = 'red';
         }
