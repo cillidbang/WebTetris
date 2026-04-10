@@ -20,6 +20,7 @@ export class Board {
         
         for (let row = 0; row <= this.board.length - 1; row++) {
             for (let column = 0; column <= this.board[row].length - 1; column++) {
+
                 if (this.board[row][column] === this.pending) {
                     this.lastPlacedPositions.push({x: row, y: column});
                 }
@@ -61,7 +62,8 @@ export class Board {
 
     nextPlacementWillCollide() {
         for (let position of this.lastPlacedPositions) {
-            const innerBonds = position.x < this.board.length - 1 && position.y < this.board[position.x].length - 1;
+            const innerBonds = position.x < this.board.length - 1 && position.x >= 0
+                && position.y < this.board[position.x].length - 1 && position.y >= 0;
             if (innerBonds) {
                 if (this.board[position.x + 1][position.y] === this.placed) {
                     return true;

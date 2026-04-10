@@ -12,6 +12,7 @@ renderer.setGridContent(boardGrid);
 
 window.addEventListener('color-it', e => {
     renderer.displayPlacedCells(e.detail);
+    console.log(e.detail)
 })
 
 playboard.figureFallUntilCollision(4, FigureCollection.Angle)
