@@ -19,7 +19,6 @@ export class Board {
 
     constructor() {
         this.board = Array.from({ length: this.height }, () => new Array(this.width).fill('.'));
-        this.clearBoardSavePlacedPositions();
     }
     clearBoardSavePlacedPositions() {
         this.pendingPositons = [];
@@ -41,9 +40,8 @@ export class Board {
         const lastIndexForPlacement = (this.board.length - 1) - (figureArray.length - 1);
 
         for (let row = 0; row <= lastIndexForPlacement; row++) {
-
-            const isLastRow = row === lastIndexForPlacement;
-            const fieldStatus = isLastRow ? this.placed : this.pending;
+            const lastValidRow = row === lastIndexForPlacement;
+            const fieldStatus = lastValidRow ? this.placed : this.pending;
 
             if (this.nextPlacementWillCollide()) {
                 this.restoreLastPlacedPositions();
@@ -55,17 +53,16 @@ export class Board {
                 bubbles: true,
                 composed: true,
             }));
-            await this.sleep(300);
+            await this.sleep(500)
             this.clearBoardSavePlacedPositions();
         }
     }
 
-    async sleep(ms) {
-        await new Promise((resolve) => new Promise(() => setTimeout(resolve, ms)));
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     restoreLastPlacedPositions() {
-        this.placedPositons = [];
         for (let position of this.pendingPositons) {
             this.board[position.x][position.y] = this.placed;
             this.placedPositons.push({x: position.x, y:position.y})
@@ -88,18 +85,17 @@ export class Board {
         this.pendingPositons = [];
         this.placedPositons = [];
 
+        const isPlacement = fieldValue === this.placed;
+
         for (let row = 0; row <= figureArray.length - 1; row++) {
             for (let column = 0; column <= figureArray[row].length - 1; column++) {
 
             let nextRow = row + rowIndex;
                 if (figureArray[row][column] !== this.empty) {
                     this.board[nextRow][column + insertColumn - 1] = fieldValue;
-                    if (fieldValue === this.placed) {
+                    if (isPlacement) {
                         this.placedPositons.push({x: nextRow, y:column + insertColumn - 1});
-                        window.dispatchEvent(new CustomEvent('next-figure', {
-                            bubbles: true,
-                            composed: true,
-                        }));
+                        continue;
                     }
                     this.pendingPositons.push({x: nextRow, y:column + insertColumn - 1})
                 }

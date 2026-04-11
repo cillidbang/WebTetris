@@ -14,17 +14,4 @@ window.addEventListener('color-it', e => {
     renderer.displayPlacedCells(e.detail);
 });
 
-
-let count = 0;
-
-window.addEventListener('next-figure', e => {
-    if (count >= 5) return;
-    playboard.figureFallUntilCollision(4, FigureCollection.Angle)
-    count++;
-});
-
-async function sleep(ms) {
-    await new Promise((resolve) => new Promise(() => setTimeout(resolve, ms)));
-}
-
 playboard.figureFallUntilCollision(4, FigureCollection.Angle)
