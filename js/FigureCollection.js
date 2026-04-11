@@ -18,4 +18,6 @@ export class FigureCollection {
         ['X','X']
     ];
 
+    
+    static allFigures = [this.Horizontal,this.Vertical, this.Angle]
 }

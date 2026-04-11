@@ -37,6 +37,19 @@ export class Board {
     }
 
     async figureFallUntilCollision(insertColumn, figureArray) {
+        window.addEventListener('rotate-figure', async e => {
+            await this.sleep(100)
+            figureArray = e.detail;
+            await this.sleep(100);
+            await this.displayPlacement();
+        });
+        window.addEventListener('move-right', async e => {
+            if (insertColumn + 1 <= this.board[0].length - 1) insertColumn++;
+        });
+        window.addEventListener('move-left', async e => {
+            if (insertColumn - 1 >= 0) insertColumn--;
+        });
+        
         const lastIndexForPlacement = (this.board.length - 1) - (figureArray.length - 1);
 
         for (let row = 0; row <= lastIndexForPlacement; row++) {
@@ -49,7 +62,6 @@ export class Board {
                 break;
             }
             this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray);
-            console.log(this.board)
             await this.displayPlacement();
         }
         return new Promise(resolve => resolve())
