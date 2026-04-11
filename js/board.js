@@ -45,17 +45,23 @@ export class Board {
 
             if (this.nextPlacementWillCollide()) {
                 this.restoreLastPlacedPositions();
-                return;
+                await this.displayPlacement();
+                break;
             }
             this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray);
-            window.dispatchEvent(new CustomEvent('color-it', {
-                detail: {pendingList: this.pendingPositons, placedList: this.placedPositons},
-                bubbles: true,
-                composed: true,
-            }));
-            await this.sleep(500)
-            this.clearBoardSavePlacedPositions();
+            await this.displayPlacement();
         }
+        return new Promise(resolve => resolve())
+    }
+
+    async displayPlacement() {
+        window.dispatchEvent(new CustomEvent('color-it', {
+            detail: {pendingList: this.pendingPositons, placedList: this.placedPositons},
+            bubbles: true,
+            composed: true,
+        }));
+        this.clearBoardSavePlacedPositions();
+        await this.sleep(200)
     }
 
     sleep(ms) {
@@ -83,7 +89,6 @@ export class Board {
     }
     insertFigureAtCoordinates(rowIndex ,insertColumn, fieldValue, figureArray) {
         this.pendingPositons = [];
-        this.placedPositons = [];
 
         const isPlacement = fieldValue === this.placed;
 
