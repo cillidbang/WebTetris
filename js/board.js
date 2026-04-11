@@ -49,6 +49,7 @@ export class Board {
                 break;
             }
             this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray);
+            console.log(this.board)
             await this.displayPlacement();
         }
         return new Promise(resolve => resolve())
