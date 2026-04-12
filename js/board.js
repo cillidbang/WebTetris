@@ -33,8 +33,12 @@ export class Board {
             }
         }
     }
-
     async figureFallUntilCollision(insertColumn, figureArray, color) {
+        const lastVerticalIndexForPlacement = (this.board.length - 1) - (figureArray.length - 1);
+        
+        const rightestIndexForPlacement = (this.board[0].length - 1) - (figureArray[0].length - 1);
+        const leftestIndexForPlacement = figureArray[0].length - 1;
+
         window.addEventListener('rotate-figure', async e => {
             await this.sleep(100)
             figureArray = e.detail;
@@ -42,16 +46,14 @@ export class Board {
             await this.displayPlacement();
         });
         window.addEventListener('move-right', async e => {
-            if (insertColumn + 1 <= this.board[0].length - 1) insertColumn++;
+            if (insertColumn + 1 <= rightestIndexForPlacement) insertColumn++;
         });
         window.addEventListener('move-left', async e => {
-            if (insertColumn - 1 >= 0) insertColumn--;
+            if (insertColumn - 1 >= leftestIndexForPlacement) insertColumn--;
         });
-        
-        const lastIndexForPlacement = (this.board.length - 1) - (figureArray.length - 1);
 
-        for (let row = 0; row <= lastIndexForPlacement; row++) {
-            const lastValidRow = row === lastIndexForPlacement;
+        for (let row = 0; row <= lastVerticalIndexForPlacement; row++) {
+            const lastValidRow = row === lastVerticalIndexForPlacement;
             const fieldStatus = lastValidRow ? this.placed : this.pending;
 
             if (this.nextPlacementWillCollide()) {
@@ -64,7 +66,6 @@ export class Board {
         }
         return new Promise(resolve => resolve())
     }
-
     async displayPlacement(color) {
         window.dispatchEvent(new CustomEvent('color-it', {
             detail: {pendingList: this.pendingPositons, placedList: this.placedPositons},
@@ -74,7 +75,6 @@ export class Board {
         this.clearBoardSavePlacedPositions(color);
         await this.sleep(100)
     }
-
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
