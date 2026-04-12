@@ -1,6 +1,4 @@
 
-import {Renderer} from "./Renderer.js";
-import {FigureCollection} from "./FigureCollection.js";
 
 export class Board {
 
@@ -61,7 +59,7 @@ export class Board {
                 await this.displayPlacement();
                 break;
             }
-            this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray);
+            await this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray);
             await this.displayPlacement();
         }
         return new Promise(resolve => resolve())
@@ -104,7 +102,6 @@ export class Board {
         this.pendingPositons = [];
 
         const isPlacement = fieldValue === this.placed;
-
         for (let row = 0; row <= figureArray.length - 1; row++) {
             for (let column = 0; column <= figureArray[row].length - 1; column++) {
 
@@ -119,6 +116,7 @@ export class Board {
                 }
             }
         }
+        return new Promise(resolve => setTimeout(resolve, 100));
     }
 
 
