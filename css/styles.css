@@ -19,6 +19,29 @@ body {
     grid-template-columns: repeat(10, 1fr);
 }
 
+.start-game-button {
+    padding: 1em;
+    border: 1px solid black;
+    border-radius: 40px;
+}
+
+.game-start-message {
+    color: black;
+}
+
+.inner-layout {
+    display: flex;
+    flex-direction: column;
+}
+.control-container {
+    height: 5em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    justify-content: center;
+    align-items: center;
+}
+
 .grid-cell {
     border: 1px solid white;
 }
