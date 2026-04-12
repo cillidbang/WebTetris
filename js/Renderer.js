@@ -29,12 +29,12 @@ export class Renderer {
         }
         for (const position of positionLists.pendingList) {
             const relatedElement = this.divMap.get(`${position.x}-${position.y}`);
-            relatedElement.style.backgroundColor = 'red';
+            relatedElement.style.backgroundColor = position.color;
         }
 
         for (const position of positionLists.placedList) {
             const relatedElement = this.divMap.get(`${position.x}-${position.y}`);
-            relatedElement.style.backgroundColor = 'red';
+            relatedElement.style.backgroundColor = position.color;
         }
     }
 

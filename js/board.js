@@ -18,14 +18,14 @@ export class Board {
     constructor() {
         this.board = Array.from({ length: this.height }, () => new Array(this.width).fill('.'));
     }
-    clearBoardSavePlacedPositions() {
+    clearBoardSavePlacedPositions(color) {
         this.pendingPositons = [];
         
         for (let row = 0; row <= this.board.length - 1; row++) {
             for (let column = 0; column <= this.board[row].length - 1; column++) {
 
                 if (this.board[row][column] === this.pending) {
-                    this.pendingPositons.push({x: row, y: column});
+                    this.pendingPositons.push({x: row, y: column, color: color});
                 }
                 if (this.board[row][column] !== this.placed) {
                     this.board[row][column] = this.empty;
@@ -34,7 +34,7 @@ export class Board {
         }
     }
 
-    async figureFallUntilCollision(insertColumn, figureArray) {
+    async figureFallUntilCollision(insertColumn, figureArray, color) {
         window.addEventListener('rotate-figure', async e => {
             await this.sleep(100)
             figureArray = e.detail;
@@ -56,23 +56,23 @@ export class Board {
 
             if (this.nextPlacementWillCollide()) {
                 this.restoreLastPlacedPositions();
-                await this.displayPlacement();
+                await this.displayPlacement(color);
                 break;
             }
-            await this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray);
-            await this.displayPlacement();
+            await this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray, color);
+            await this.displayPlacement(color);
         }
         return new Promise(resolve => resolve())
     }
 
-    async displayPlacement() {
+    async displayPlacement(color) {
         window.dispatchEvent(new CustomEvent('color-it', {
             detail: {pendingList: this.pendingPositons, placedList: this.placedPositons},
             bubbles: true,
             composed: true,
         }));
-        this.clearBoardSavePlacedPositions();
-        await this.sleep(200)
+        this.clearBoardSavePlacedPositions(color);
+        await this.sleep(100)
     }
 
     sleep(ms) {
@@ -82,7 +82,7 @@ export class Board {
     restoreLastPlacedPositions() {
         for (let position of this.pendingPositons) {
             this.board[position.x][position.y] = this.placed;
-            this.placedPositons.push({x: position.x, y:position.y})
+            this.placedPositons.push({x: position.x, y:position.y, color: position.color})
         }
     }
 
@@ -98,7 +98,7 @@ export class Board {
         }
         return false;
     }
-    insertFigureAtCoordinates(rowIndex ,insertColumn, fieldValue, figureArray) {
+    insertFigureAtCoordinates(rowIndex ,insertColumn, fieldValue, figureArray, color) {
         this.pendingPositons = [];
 
         const isPlacement = fieldValue === this.placed;
@@ -109,10 +109,10 @@ export class Board {
                 if (figureArray[row][column] !== this.empty) {
                     this.board[nextRow][column + insertColumn - 1] = fieldValue;
                     if (isPlacement) {
-                        this.placedPositons.push({x: nextRow, y:column + insertColumn - 1});
+                        this.placedPositons.push({x: nextRow, y:column + insertColumn - 1, color: color});
                         continue;
                     }
-                    this.pendingPositons.push({x: nextRow, y:column + insertColumn - 1})
+                    this.pendingPositons.push({x: nextRow, y:column + insertColumn - 1, color: color})
                 }
             }
         }

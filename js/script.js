@@ -40,7 +40,17 @@ window.addEventListener('keydown', async e => {
 async function gameLoop() {
     for (let i = 0; i <= 10; i++) {
         figure = figureObj.getRandomFigure();
-        await playboard.figureFallUntilCollision(insertColumn, figure);
+        const color = getRandomColor();
+        await playboard.figureFallUntilCollision(insertColumn, figure, color);
     }
+}
 
+function getRandomColor() {
+    const colors = ['red', 'blue', 'green'];
+    let cIndex = getRandomArbitrary(0, colors.length - 1)
+    return colors[cIndex];
+}
+
+function getRandomArbitrary(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
