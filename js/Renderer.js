@@ -3,14 +3,18 @@
 export class Renderer {
 
     boardData;
-    divMap = new Map();
+    divMap;
     
     constructor(board) {
+        this.divMap = new Map();
         this.boardData = board;
     }
     
 
     setGridContent(boardGrid) {
+        
+        boardGrid.innerHTML = ``; 
+        
         for (let row = 0; row <= this.boardData.length - 1; row++) {
             for (let column = 0; column <= this.boardData[row].length - 1; column++) {
                 const div = document.createElement('div');
