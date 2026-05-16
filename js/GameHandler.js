@@ -1,24 +1,31 @@
-import {Board} from "./board.js";
+import {Arena} from "./arena.js";
 import {Renderer} from "./Renderer.js";
-import {FigureCollection} from "./FigureCollection.js";
 import {Figure} from "./Figure.js";
 
 export class GameHandler {
 
+    running = true;
 
-    constructor() {
-        this.boardGrid = document.querySelector('.board-grid');
 
-        this.playboard = new Board();
-        this.renderer = new Renderer(this.playboard.board)
-        this.figureObj = new Figure(FigureCollection.allFigures)
-        this.figure = this.figureObj.figure;
-        this.insertColumn = 4;
+    constructor(gameWrapper) {
+        gameWrapper.innerHTML = `<div class="board-grid"></div>`;
+        const boardContainer = document.querySelector(".board-grid");
 
-        this.renderer.setGridContent(this.boardGrid);
+        this.arena = new Arena();
+        this.renderer = new Renderer(this.arena);
+        this.figureObj = new Figure()
+        this.figure = this.figureObj.getFigure();
+
+        this.defaultColumn = 4;
+
+        this.renderer.render(boardContainer);
         this.addControlListeners();
         this.addRenderEventListener();
         this.gameLoop();
+    }
+
+    stop() {
+        this.running = false;
     }
 
     addRenderEventListener() {
@@ -41,20 +48,10 @@ export class GameHandler {
     }
 
     async gameLoop() {
-        for (let i = 0; i <= 10; i++) {
+        while (this.running) {
             this.figure = this.figureObj.getRandomFigure();
-            const color = this.getRandomColor();
-            await this.playboard.figureFallUntilCollision(this.insertColumn, this.figure, color);
+            const figureColor = this.figureObj.getRandomColor();
+            await this.arena.throwFigureUntilCollision(this.defaultColumn, this.figure, figureColor);
         }
-    }
-
-    getRandomColor() {
-        const colors = ['red', 'blue', 'green', 'purple'];
-        let cIndex = this.getRandomArbitrary(0, colors.length - 1)
-        return colors[cIndex];
-    }
-
-    getRandomArbitrary(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 }

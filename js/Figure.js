@@ -1,22 +1,19 @@
+import {FigureCollection} from "./FigureCollection.js";
 
 export class Figure {
 
     figure;
-    figureArray;
+    figureCollection = FigureCollection.allFigures;
 
-    constructor(figureArray) {
-        this.figureArray = figureArray;
+    constructor() {
         this.figure = this.getRandomFigure();
     }
 
     getRandomFigure() {
-        let randomIndex = this.getRandomArbitrary(0, this.figureArray.length - 1);
-        return this.figureArray[randomIndex];
+        let randomIndex = this.getRandomNumber(0, this.figureCollection.length - 1);
+        return this.figureCollection[randomIndex];
     }
 
-    getRandomArbitrary(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
     rotateRight(array) {
         let rows = array.length;
         let cols = array[0].length;
@@ -30,16 +27,17 @@ export class Figure {
         return rotated;
     }
 
-    rotateLeft(array) {
-        let rows = array.length;
-        let cols = array[0].length;
-        let rotated = Array.from({ length: rows }, () => new Array(cols).fill('.'));
+    getRandomColor() {
+        const colors = ['red', 'blue', 'green', 'purple'];
+        let cIndex = this.getRandomNumber(0, colors.length - 1)
+        return colors[cIndex];
+    }
+    getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
-        for (let row = 0; row < rows; row++) {
-            for (let col = 0; col < cols; col++) {
-                rotated[cols - 1 - col][row] = array[row][col];
-            }
-        }
-        return rotated;
+
+    getFigure() {
+        return this.figure;
     }
 }

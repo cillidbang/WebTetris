@@ -5,15 +5,15 @@ export class Renderer {
     boardData;
     divMap;
     
-    constructor(board) {
+    constructor(playboardObj) {
         this.divMap = new Map();
-        this.boardData = board;
+        this.boardData = playboardObj.board;
     }
     
 
-    setGridContent(boardGrid) {
+    render(boardContainer) {
         
-        boardGrid.innerHTML = ``; 
+        boardContainer.innerHTML = ``;
         
         for (let row = 0; row <= this.boardData.length - 1; row++) {
             for (let column = 0; column <= this.boardData[row].length - 1; column++) {
@@ -21,7 +21,7 @@ export class Renderer {
                 div.classList.add("grid-cell")
                 div.dataset.row = `${row}`;
                 div.dataset.column = `${column}`;
-                const elem = boardGrid.appendChild(div);
+                const elem = boardContainer.appendChild(div);
                 this.divMap.set(`${row}-${column}`, elem);
             }
         }

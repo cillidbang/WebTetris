@@ -1,6 +1,6 @@
 
 
-export class Board {
+export class Arena {
 
     height = 20;
     width = 10;
@@ -33,7 +33,7 @@ export class Board {
             }
         }
     }
-    async figureFallUntilCollision(insertColumn, figureArray, color) {
+    async throwFigureUntilCollision(insertColumn, figureArray, color) {
         const lastVerticalIndexForPlacement = (this.board.length - 1) - (figureArray.length - 1);
         
         const rightestIndexForPlacement = (this.board[0].length - 1) - (figureArray[0].length - 1);
@@ -66,6 +66,7 @@ export class Board {
         }
         return new Promise(resolve => resolve())
     }
+
     async displayPlacement(color) {
         window.dispatchEvent(new CustomEvent('color-it', {
             detail: {pendingList: this.pendingPositons, placedList: this.placedPositons},
@@ -88,8 +89,10 @@ export class Board {
 
     nextPlacementWillCollide() {
         for (let position of this.pendingPositons) {
-            const innerBonds = position.x < this.board.length - 1 && position.x >= 0
-                && position.y < this.board[position.x].length - 1 && position.y >= 0;
+            const innerBonds = position.x < this.board.length - 1
+                && position.x >= 0
+                && position.y < this.board[position.x].length - 1
+                && position.y >= 0;
             if (innerBonds) {
                 if (this.board[position.x + 1][position.y] === this.placed) {
                     return true;
