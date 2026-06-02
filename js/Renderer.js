@@ -11,8 +11,8 @@ export class Renderer {
     }
     
 
-    render(boardContainer) {
-        
+    renderGrid() {
+        const boardContainer = document.querySelector(".board-grid");
         boardContainer.innerHTML = ``;
         
         for (let row = 0; row <= this.boardData.length - 1; row++) {
@@ -27,7 +27,7 @@ export class Renderer {
         }
     }
 
-    displayPlacedCells(positionLists) {
+    renderFigureCells(positionLists) {
         for (const value of this.divMap.values()) {
             value.style.backgroundColor = "black";
         }

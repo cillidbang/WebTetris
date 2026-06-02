@@ -5,32 +5,32 @@ import {Figure} from "./Figure.js";
 export class GameHandler {
 
     running = true;
+    static DEFAULT_COLUMN = 4;
 
 
     constructor(gameWrapper) {
         gameWrapper.innerHTML = `<div class="board-grid"></div>`;
-        const boardContainer = document.querySelector(".board-grid");
+        this.loadOptions();
+        this.renderer.renderGrid();
+        this.addControlListeners();
+        this.addFigureMoveListener();
+        this.gameLoop();
+    }
 
+    loadOptions() {
         this.arena = new Arena();
         this.renderer = new Renderer(this.arena);
-        this.figureObj = new Figure()
+        this.figureObj = new Figure();
         this.figure = this.figureObj.getFigure();
-
-        this.defaultColumn = 4;
-
-        this.renderer.render(boardContainer);
-        this.addControlListeners();
-        this.addRenderEventListener();
-        this.gameLoop();
     }
 
     stop() {
         this.running = false;
     }
 
-    addRenderEventListener() {
+    addFigureMoveListener() {
         window.addEventListener('color-it', e => {
-            this.renderer.displayPlacedCells(e.detail);
+            this.renderer.renderFigureCells(e.detail);
         });
     }
 
@@ -51,7 +51,7 @@ export class GameHandler {
         while (this.running) {
             this.figure = this.figureObj.getRandomFigure();
             const figureColor = this.figureObj.getRandomColor();
-            await this.arena.throwFigureUntilCollision(this.defaultColumn, this.figure, figureColor);
+            await this.arena.moveFigureUntilCollision(GameHandler.DEFAULT_COLUMN, this.figure, figureColor);
         }
     }
 }

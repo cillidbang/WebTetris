@@ -33,41 +33,41 @@ export class Arena {
             }
         }
     }
-    async throwFigureUntilCollision(insertColumn, figureArray, color) {
-        const lastVerticalIndexForPlacement = (this.board.length - 1) - (figureArray.length - 1);
-        
-        const rightestIndexForPlacement = (this.board[0].length - 1) - (figureArray[0].length - 1);
-        const leftestIndexForPlacement = figureArray[0].length - 1;
+    async moveFigureUntilCollision(insertColumn, arrayContainingFigure, color) {
+        const maxVerticalIndex = (this.board.length - 1) - (arrayContainingFigure.length - 1);
+        const maxHorizontalIndexFromRight = (this.board[0].length - 1) - (arrayContainingFigure[0].length - 1);
+        const minHorizontalIndex = (arrayContainingFigure[0].length - 1);
 
         window.addEventListener('rotate-figure', async e => {
-            await this.sleep(100)
-            figureArray = e.detail;
-            await this.sleep(100);
-            await this.displayPlacement();
+            await this.sleep(500)
+            arrayContainingFigure = e.detail;
+            await this.sleep(500);
+            await this.renderAtFigureCoordinates();
         });
         window.addEventListener('move-right', async e => {
-            if (insertColumn + 1 <= rightestIndexForPlacement) insertColumn++;
+            const futureColumn = insertColumn + 1;
+            if (futureColumn <= maxHorizontalIndexFromRight) insertColumn++;
         });
         window.addEventListener('move-left', async e => {
-            if (insertColumn - 1 >= leftestIndexForPlacement) insertColumn--;
+            const futureColumn = insertColumn - 1;
+            if (futureColumn >= minHorizontalIndex) insertColumn--;
         });
 
-        for (let row = 0; row <= lastVerticalIndexForPlacement; row++) {
-            const lastValidRow = row === lastVerticalIndexForPlacement;
-            const fieldStatus = lastValidRow ? this.placed : this.pending;
+        for (let row = 0; row <= maxVerticalIndex; row++) {
+            const fieldValue = row === maxVerticalIndex ? this.placed : this.pending;
 
             if (this.nextPlacementWillCollide()) {
                 this.restoreLastPlacedPositions();
-                await this.displayPlacement(color);
+                await this.renderAtFigureCoordinates(color);
                 break;
             }
-            await this.insertFigureAtCoordinates(row, insertColumn, fieldStatus, figureArray, color);
-            await this.displayPlacement(color);
+            await this.insertFigureAtCoordinates(row, insertColumn, fieldValue, arrayContainingFigure, color);
+            await this.renderAtFigureCoordinates(color);
         }
         return new Promise(resolve => resolve())
     }
 
-    async displayPlacement(color) {
+    async renderAtFigureCoordinates(color) {
         window.dispatchEvent(new CustomEvent('color-it', {
             detail: {pendingList: this.pendingPositons, placedList: this.placedPositons},
             bubbles: true,
