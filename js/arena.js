@@ -14,9 +14,13 @@ export class Arena {
     pendingPositons = [];
     placedPositons = [];
 
+    currentFigure = [];
+    currentColumn = [];
+
 
     constructor() {
         this.resetBoard();
+        this.addMoveActionListeners();
     }
 
     resetBoard() {
@@ -44,23 +48,6 @@ export class Arena {
         this.currentFigure = arrayContainingFigure;
 
         const maxVerticalIndex = (this.board.length - 1) - (this.currentFigure.length - 1);
-        const maxHorizontalIndexFromRight = (this.board[0].length - 1) - (this.currentFigure[0].length - 1);
-        const minHorizontalIndex = (this.currentFigure[0].length - 1);
-
-        window.addEventListener('rotate-figure', async e => {
-            await this.sleep(500)
-            this.currentFigure = e.detail;
-            await this.sleep(500);
-            await this.renderAtFigureCoordinates();
-        });
-        window.addEventListener('move-right', async e => {
-            const futureColumn = this.currentColumn + 1;
-            if (futureColumn <= maxHorizontalIndexFromRight) this.currentColumn++;
-        });
-        window.addEventListener('move-left', async e => {
-            const futureColumn = this.currentColumn - 1;
-            if (futureColumn >= minHorizontalIndex) this.currentColumn--;
-        });
 
         for (let row = 0; row <= maxVerticalIndex; row++) {
             const fieldValue = row === maxVerticalIndex ? this.placed : this.pending;
@@ -73,7 +60,23 @@ export class Arena {
             await this.insertFigureAtCoordinates(row, this.currentColumn, fieldValue, this.currentFigure, color);
             await this.renderAtFigureCoordinates(color);
         }
-        return new Promise(resolve => resolve())
+    }
+
+    addMoveActionListeners() {
+        window.addEventListener('rotate-figure', async e => {
+            this.currentFigure = e.detail;
+            await this.renderAtFigureCoordinates();
+        });
+        window.addEventListener('move-right', async e => {
+            const futureColumn = this.currentColumn + 1;
+            const maxHorizontalIndexFromRight = (this.board[0].length - 1) - (this.currentFigure[0].length - 1);
+            if (futureColumn <= maxHorizontalIndexFromRight) this.currentColumn++;
+        });
+        window.addEventListener('move-left', async e => {
+            const futureColumn = this.currentColumn - 1;
+            const minHorizontalIndex = (this.currentFigure[0].length - 1);
+            if (futureColumn >= minHorizontalIndex) this.currentColumn--;
+        });
     }
 
     async renderAtFigureCoordinates(color) {
