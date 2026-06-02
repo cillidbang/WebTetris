@@ -16,8 +16,13 @@ export class Arena {
 
 
     constructor() {
+        this.resetBoard();
+    }
+
+    resetBoard() {
         this.board = Array.from({ length: this.height }, () => new Array(this.width).fill('.'));
     }
+
     clearBoardSavePlacedPositions(color) {
         this.pendingPositons = [];
         
@@ -34,23 +39,27 @@ export class Arena {
         }
     }
     async moveFigureUntilCollision(insertColumn, arrayContainingFigure, color) {
-        const maxVerticalIndex = (this.board.length - 1) - (arrayContainingFigure.length - 1);
-        const maxHorizontalIndexFromRight = (this.board[0].length - 1) - (arrayContainingFigure[0].length - 1);
-        const minHorizontalIndex = (arrayContainingFigure[0].length - 1);
+
+        this.currentColumn = insertColumn;
+        this.currentFigure = arrayContainingFigure;
+
+        const maxVerticalIndex = (this.board.length - 1) - (this.currentFigure.length - 1);
+        const maxHorizontalIndexFromRight = (this.board[0].length - 1) - (this.currentFigure[0].length - 1);
+        const minHorizontalIndex = (this.currentFigure[0].length - 1);
 
         window.addEventListener('rotate-figure', async e => {
             await this.sleep(500)
-            arrayContainingFigure = e.detail;
+            this.currentFigure = e.detail;
             await this.sleep(500);
             await this.renderAtFigureCoordinates();
         });
         window.addEventListener('move-right', async e => {
-            const futureColumn = insertColumn + 1;
-            if (futureColumn <= maxHorizontalIndexFromRight) insertColumn++;
+            const futureColumn = this.currentColumn + 1;
+            if (futureColumn <= maxHorizontalIndexFromRight) this.currentColumn++;
         });
         window.addEventListener('move-left', async e => {
-            const futureColumn = insertColumn - 1;
-            if (futureColumn >= minHorizontalIndex) insertColumn--;
+            const futureColumn = this.currentColumn - 1;
+            if (futureColumn >= minHorizontalIndex) this.currentColumn--;
         });
 
         for (let row = 0; row <= maxVerticalIndex; row++) {
@@ -61,7 +70,7 @@ export class Arena {
                 await this.renderAtFigureCoordinates(color);
                 break;
             }
-            await this.insertFigureAtCoordinates(row, insertColumn, fieldValue, arrayContainingFigure, color);
+            await this.insertFigureAtCoordinates(row, this.currentColumn, fieldValue, this.currentFigure, color);
             await this.renderAtFigureCoordinates(color);
         }
         return new Promise(resolve => resolve())
