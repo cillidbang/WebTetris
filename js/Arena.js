@@ -1,5 +1,3 @@
-import {Figure} from "./Figure.js";
-
 
 export class Arena {
 
@@ -12,7 +10,7 @@ export class Arena {
     empty = '.';
     pending = 'X';
 
-    pendingPositons = [];
+    pendingPositions = [];
     placedPositons = [];
 
     currentFigure = [];
@@ -20,23 +18,20 @@ export class Arena {
 
 
     constructor() {
-        this.resetBoard();
+        this.resetArena();
     }
 
-    resetBoard() {
+    resetArena() {
         this.board = Array.from({ length: this.height }, () => new Array(this.width).fill('.'));
     }
 
-    clearBoardSavePlacedPositions(color) {
-        this.pendingPositons = [];
-        
+    clearArenaMemorizePendingPositions(color) {
+        this.pendingPositions = [];
+
         for (let row = 0; row <= this.board.length - 1; row++) {
             for (let column = 0; column <= this.board[row].length - 1; column++) {
-
                 if (this.board[row][column] === this.pending) {
-                    this.pendingPositons.push({x: row, y: column, color: color});
-                }
-                if (this.board[row][column] !== this.placed) {
+                    this.pendingPositions.push({x: row, y: column, color: color});
                     this.board[row][column] = this.empty;
                 }
             }
@@ -81,11 +76,11 @@ export class Arena {
 
     async renderAtFigureCoordinates(color) {
         window.dispatchEvent(new CustomEvent('color-it', {
-            detail: {pendingList: this.pendingPositons, placedList: this.placedPositons},
+            detail: {pendingList: this.pendingPositions, placedList: this.placedPositons},
             bubbles: true,
             composed: true,
         }));
-        this.clearBoardSavePlacedPositions(color);
+        this.clearArenaMemorizePendingPositions(color);
         await this.sleep(100)
     }
     sleep(ms) {
@@ -93,14 +88,14 @@ export class Arena {
     }
 
     restoreLastPlacedPositions() {
-        for (let position of this.pendingPositons) {
+        for (let position of this.pendingPositions) {
             this.board[position.x][position.y] = this.placed;
             this.placedPositons.push({x: position.x, y:position.y, color: position.color})
         }
     }
 
     nextPlacementWillCollide() {
-        for (let position of this.pendingPositons) {
+        for (let position of this.pendingPositions) {
             const innerBonds = position.x < this.board.length - 1
                 && position.x >= 0
                 && position.y < this.board[position.x].length - 1
@@ -114,7 +109,7 @@ export class Arena {
         return false;
     }
     insertFigureAtCoordinates(rowIndex ,insertColumn, fieldValue, figureArray, color) {
-        this.pendingPositons = [];
+        this.pendingPositions = [];
 
         const isPlacement = fieldValue === this.placed;
         for (let row = 0; row <= figureArray.length - 1; row++) {
@@ -124,10 +119,10 @@ export class Arena {
                 if (figureArray[row][column] !== this.empty) {
                     this.board[nextRow][column + insertColumn - 1] = fieldValue;
                     if (isPlacement) {
-                        this.placedPositons.push({x: nextRow, y:column + insertColumn - 1, color: color});
+                        this.placedPositons.push({x: nextRow, y: column + insertColumn - 1, color: color});
                         continue;
                     }
-                    this.pendingPositons.push({x: nextRow, y:column + insertColumn - 1, color: color})
+                    this.pendingPositions.push({x: nextRow, y: column + insertColumn - 1, color: color})
                 }
             }
         }
