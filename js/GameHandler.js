@@ -1,4 +1,4 @@
-import {Arena} from "./arena.js";
+import {Arena} from "./Arena.js";
 import {Renderer} from "./Renderer.js";
 import {Figure} from "./Figure.js";
 
@@ -38,11 +38,11 @@ export class GameHandler {
         window.addEventListener('keydown', async e => {
             if (e.key === "ArrowUp") {
                 this.figure = this.figureObj.rotateRight(this.figure);
-                dispatchEvent(new CustomEvent("rotate-figure", {detail: this.figure, bubbles: true, composed: true}));
+                await this.arena.rotate(this.figure);
             } else if (e.key === "ArrowRight") {
-                dispatchEvent(new CustomEvent("move-right", {bubbles: true, composed: true}));
+                this.arena.moveRight();
             } else if (e.key === "ArrowLeft") {
-                dispatchEvent(new CustomEvent("move-left", {bubbles: true, composed: true}));
+                this.arena.moveLeft();
             }
         });
     }
