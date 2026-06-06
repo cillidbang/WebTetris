@@ -1,0 +1,7 @@
+
+
+
+todo:
+
+    1. only display pending figures in html
+    2. remove full lines, count as score
