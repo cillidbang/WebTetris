@@ -27,25 +27,27 @@ export class Arena {
     async moveFigureUntilCollision(insertColumn, arrayContainingFigure, color) {
         this.currentColumn = insertColumn;
         this.currentFigure = arrayContainingFigure;
+        this.lastRowForFigure = (this.board.length - 1) - (this.currentFigure.length - 1);
 
         this.positionsOfPendingFigure = [];
 
         for (let row = 0; row < this.board.length; row++) {
+            this.pushPendingFigure(row, color);
+
             if (this.nextMoveCollide(row)) {
                 this.placePendingFigure();
-                this.renderAtFigureCoordinates();
+                this.renderAllFigures();
                 await this.sleep(this.tickDuration);
                 break;
             }
-            this.pushPendingFigure(row, color);
-            this.renderAtFigureCoordinates();
+            this.renderAllFigures();
             await this.sleep(this.tickDuration);
         }
     }
 
     async rotate(figure) {
         this.currentFigure = figure;
-        await this.renderAtFigureCoordinates();
+        await this.renderAllFigures();
     }
 
     moveRight() {
@@ -60,7 +62,7 @@ export class Arena {
         if (futureColumn >= minHorizontalIndex) this.currentColumn--;
     }
 
-    renderAtFigureCoordinates() {
+    renderAllFigures() {
         window.dispatchEvent(new CustomEvent('color-it', {
             detail: {pendingList: this.positionsOfPendingFigure, placedList: this.placedPositons},
             bubbles: true,
@@ -78,9 +80,9 @@ export class Arena {
         }
     }
 
-    nextMoveCollide(currentRow) {
-        const lastIndexInnerBonds = (this.board.length - 1) - (this.currentFigure.length - 1);
-        if (currentRow === lastIndexInnerBonds) return true;
+    nextMoveCollide(row) {
+
+        if (row === this.lastRowForFigure) return true;
 
         for (let position of this.positionsOfPendingFigure) {
             const outerBonds = position.x < 0 || position.y < 0
